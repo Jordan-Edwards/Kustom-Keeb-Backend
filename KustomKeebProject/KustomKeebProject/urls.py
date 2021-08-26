@@ -1,14 +1,16 @@
 from django.contrib import admin
 from django.urls import path, include
-
-# when i want to import values from the settings
 from django.conf import settings
 from django.conf.urls.static import static
+# when i want to import values from the settings
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # path('api/', include('base.urls')),
 
 
