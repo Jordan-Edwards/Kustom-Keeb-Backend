@@ -6,19 +6,18 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class CategoryList(APIView):
+class ProductByCategoryList(APIView):
 
-    def get(self, request):
-        category = Category.objects.all()
-        serializer = CategorySerializer(category, many=True)
+    def filter_by_id(self, category_id):
+        try:
+            return Product.objects.filter(category_id=category_id)
+        except category_id.DoesNotExist:
+            raise Http404
+
+    def get(self, request, category_id):
+        category_id = self.filter_by_id(category_id)
+        serializer = ProductSerializer(category_id, many=True)
         return Response(serializer.data)
-
-    def post(self, request):
-        serializer = CategorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductList(APIView):
@@ -27,3 +26,15 @@ class ProductList(APIView):
         product = Product.objects.all()
         serializer = ProductSerializer(product, many=True)
         return Response(serializer.data)
+
+
+class ProductDetails(APIView):
+
+    def get(self, request, pk):
+        print(pk)
+        try:
+            product = Product.objects.get(pk=pk)
+            serializer = ProductSerializer(product)
+            return Response(serializer.data)
+        except Product.DoesNotExist:
+            raise Http404
